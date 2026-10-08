@@ -1,0 +1,97 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CRM Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'bulma/bulma.min.css' %}">
+  <style>
+    body { background-color: #1c1c1e; color: #f0f0f0; }
+    .navbar, .menu, .box { background-color: #2c2c2e !important; }
+    #sidebar a { color: #ccc !important; transition: background-color .2s; }
+    #sidebar a:hover { background-color: #3a3a3c !important; color: #fff !important; }
+    #sidebar a.is-active { background-color: #444 !important; color: #fff !important; }
+  </style>
+</head>
+<body>
+  <nav class="navbar is-dark px-4">
+    <div class="navbar-brand">
+      <a class="navbar-item has-text-weight-bold is-size-5">🧠 CRM System</a>
+      <a role="button" class="navbar-burger" onclick="toggleSidebar()">
+        <span></span><span></span><span></span>
+      </a>
+    </div>
+    <div class="navbar-menu">
+      <div class="navbar-end">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link">👤 Account</a>
+          <div class="navbar-dropdown is-right is-dark">
+            <a class="navbar-item" onclick="logout()">🚪 Logout</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="columns is-gapless">
+    <aside id="sidebar" class="column is-2 menu p-4">
+      <ul class="menu-list">
+        <li><a id="menu-dashboard" href="#" onclick="loadDashboard()">📊 Dashboard</a></li>
+        <li><a id="menu-customers" href="#" onclick="loadCustomers()">👥 Customers</a></li>
+        <li><a id="menu-activities" href="#" onclick="loadActivities()">📅 Activities</a></li>
+      </ul>
+    </aside>
+
+    <main class="column p-5" id="content-area" style="min-height: calc(100vh - 52px);">
+      <!-- loaded content -->
+    </main>
+  </div>
+
+  {% comment %} Include Chart.js and our JS file {% endcomment %}
+  <script src="{% static 'js/chart.js' %}"></script>
+  <script src="{% static 'js/crm-dashboard.js' %}"></script>
+  <script>
+    if (!localStorage.getItem("access")) {
+      window.location.href = "/login/";
+    } else {
+      loadDashboard();
+    }
+  </script>
+
+
+<!-- Customer Modal -->
+<div id="customer-modal" class="modal">
+  <div class="modal-background"></div>
+  <div class="modal-card">
+    <header class="modal-card-head">
+      <p class="modal-card-title has-text-black" id="modal-title">Add Customer</p>
+      <button class="delete" aria-label="close" onclick="closeCustomerModal()"></button>
+    </header>
+    <section class="modal-card-body">
+      <form id="customer-form">
+        <input type="hidden" id="customer-id">
+        <div class="field">
+          <label class="label has-text-black">Name</label>
+          <div class="control">
+            <input class="input" type="text" id="customer-name" required>
+          </div>
+        </div>
+        <div class="field">
+          <label class="label has-text-black">Description</label>
+          <div class="control">
+            <textarea class="textarea" id="customer-description"></textarea>
+          </div>
+        </div>
+      </form>
+    </section>
+    <footer class="modal-card-foot">
+      <button class="button is-success" onclick="saveCustomer()">Save</button>
+      <button class="button is-danger" onclick="deleteCustomer()">Delete</button>
+      <button class="button" onclick="closeCustomerModal()">Cancel</button>
+    </footer>
+  </div>
+</div>
+
+</body>
+</html>

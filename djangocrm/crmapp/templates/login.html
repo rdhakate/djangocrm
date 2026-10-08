@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<section class="section is-flex is-justify-content-center is-align-items-center" style="min-height: 100vh;">
+  <div class="box" style="width: 100%; max-width: 400px;">
+    <h1 class="title has-text-centered">Login</h1>
+    
+    <form id="login-form" novalidate>
+      <!-- Company -->
+      <div class="field">
+        <label class="label">Company</label>
+        <div class="control">
+          <input class="input" type="text" name="company_name" id="company_name" placeholder="Enter company name">
+        </div>
+        <p class="help is-danger" id="error-company"></p>
+      </div>
+
+      <!-- Email -->
+      <div class="field">
+        <label class="label">Email</label>
+        <div class="control">
+          <input class="input" type="email" name="email" id="email" placeholder="Enter email">
+        </div>
+        <p class="help is-danger" id="error-email"></p>
+      </div>
+
+      <!-- Password -->
+      <div class="field">
+        <label class="label">Password</label>
+        <div class="control">
+          <input class="input" type="password" name="password" id="password" placeholder="Enter password">
+        </div>
+        <p class="help is-danger" id="error-password"></p>
+      </div>
+
+      <!-- Server/API error -->
+      <p class="has-text-danger has-text-centered" id="server-error" style="display:none;"></p>
+
+      <!-- Submit button -->
+      <div class="field mt-4">
+        <div class="control">
+          <button class="button is-link is-fullwidth" type="submit" id="login-btn">Login</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+document.getElementById("login-form").addEventListener("submit", async function(e) {
+  e.preventDefault();
+
+  // Reset error messages
+  document.getElementById("error-company").textContent = "";
+  document.getElementById("error-email").textContent = "";
+  document.getElementById("error-password").textContent = "";
+  document.getElementById("server-error").style.display = "none";
+
+  const company = document.getElementById("company_name").value.trim();
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value.trim();
+  let hasError = false;
+
+  // Client-side validation
+  if (!company) {
+    document.getElementById("error-company").textContent = "Company name is required.";
+    hasError = true;
+  }
+  if (!email) {
+    document.getElementById("error-email").textContent = "Email is required.";
+    hasError = true;
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    document.getElementById("error-email").textContent = "Enter a valid email address.";
+    hasError = true;
+  }
+  if (!password) {
+    document.getElementById("error-password").textContent = "Password is required.";
+    hasError = true;
+  }
+
+  if (hasError) return;
+
+  const loginBtn = document.getElementById("login-btn");
+  loginBtn.classList.add("is-loading");
+
+  try {
+    const res = await fetch('/api/token/', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ company_name: company, email, password })
+    });
+
+    const result = await res.json();
+    if (res.ok) {
+      localStorage.setItem("access", result.access);
+      localStorage.setItem("refresh", result.refresh);
+      window.location.href = "/dashboard/";
+    } else {
+      document.getElementById("server-error").textContent = result.detail || "Login failed. Please try again.";
+      document.getElementById("server-error").style.display = "block";
+    }
+  } catch (err) {
+    document.getElementById("server-error").textContent = "Network error. Please try again.";
+    document.getElementById("server-error").style.display = "block";
+  }
+
+  loginBtn.classList.remove("is-loading");
+});
+</script>
+{% endblock %}

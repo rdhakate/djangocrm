@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<nav class="navbar is-dark" role="navigation">
+  <div class="navbar-brand">
+    <a class="navbar-item">CRM</a>
+    <a role="button" class="navbar-burger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </a>
+  </div>
+  <div class="navbar-end">
+    <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link">Menu</a>
+      <div class="navbar-dropdown is-right">
+        <a class="navbar-item" onclick="logout()">Logout</a>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="columns is-gapless">
+  <aside class="column is-2 menu is-hidden-mobile" id="sidebar">
+    <p class="menu-label">Modules</p>
+    <ul class="menu-list">
+      <li><a onclick="loadDashboard()">Dashboard</a></li>
+      <li><a onclick="loadCustomers()">Customers</a></li>
+      <li><a onclick="loadActivities()">Activities</a></li>
+    </ul>
+  </aside>
+
+  <main class="column p-5" id="content-area">
+    <h1 class="title">Welcome to CRM</h1>
+    <p>Select a module from the left menu.</p>
+  </main>
+</div>
+
+<script>
+function toggleSidebar() {
+  document.getElementById("sidebar").classList.toggle("is-hidden-mobile");
+}
+function API(path) {
+  return fetch(path, {
+    headers: { 'Authorization': 'Bearer ' + localStorage.getItem("access") }
+  }).then(r => r.json());
+}
+function loadDashboard() {
+  document.getElementById("content-area").innerHTML = `
+    <h2 class="title">Dashboard</h2>
+    <p>Analytics and quick overview can go here.</p>
+  `;
+}
+function loadCustomers() {
+  API('/api/customers/').then(data => {
+    let html = `<h2 class="title">Customers</h2><ul>`;
+    data.forEach(c => html += `<li>${c.name} - ${c.description}</li>`);
+    html += `</ul>`;
+    document.getElementById("content-area").innerHTML = html;
+  });
+}
+function loadActivities() {
+  API('/api/activities/').then(data => {
+    let html = `<h2 class="title">Activities</h2><ul>`;
+    data.forEach(a => html += `<li>${a.title}: ${a.start_datetime}</li>`);
+    html += `</ul>`;
+    document.getElementById("content-area").innerHTML = html;
+  });
+}
+function logout() {
+  localStorage.clear();
+  window.location.href = '/login/';
+}
+if (!localStorage.getItem("access")) {
+  window.location.href = "/login/";
+}
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CRM Login</title>
+</head>
+<body>
+    <h2>Tenant Login</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Login</button>
+    </form>
+    <p style="color:red;">{{ message }}</p>
+</body>
+</html>

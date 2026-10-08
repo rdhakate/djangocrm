@@ -1,0 +1,27 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}CRM{% endblock %}</title>
+  {% load static %}
+  <script src="{% static 'chart.js' %}"></script>
+  <script src="{% static 'js/crm-dashboard.js' %}"></script>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'bulma/bulma.min.css' %}">
+  <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+  <style>
+    body { background-color: #1c1c1e; color: #f0f0f0; }
+    .navbar, .menu, .card { background-color: #2c2c2e; color: #fff; }
+    .navbar-item:hover, .menu-item:hover { background-color: #3a3a3c; }
+    .is-active { background-color: #363636; }
+    a, strong { color: #f0f0f0; }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  {% block content %}{% endblock %}
+</body>
+</html>
